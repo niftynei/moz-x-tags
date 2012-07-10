@@ -32,7 +32,7 @@
 		<dt>Slide Box</dt>
 		<dd id="slidebox">
 			<p class="description">
-				A container that allows animated transitions between content panes. Slide Box supports horizontal and vertical transitions.
+				A container that allows animated transitions between content panes. Slide Box supports horizontal and vertical transitions. Also supports auto scrolling.  Toggles off and on with every call.
 			</p>
 			
 			<nav class="actions">				
@@ -40,6 +40,7 @@
 				<button data-action-type="slideNext">Next Slide -></button>
 				<button data-action-type="slideTo">Slide To 3</button>
 				<button data-action-type="slideOrientation">Toggle orientation</button>
+				<button data-action-type="autoSlide">AutoSlide</button>
 			</nav>
 			
 			<x-slidebox id="slidebox_demo" data-orientation='x'>
@@ -84,6 +85,9 @@
 
 				case 'slideTo':
 					demo.xtag.slideTo(2);
+					break;
+				case 'autoSlide' :
+					demo.xtag.autoSlide(2000);
 					break;
 				case 'slideOrientation':
 					demo['data-orientation'] = demo.getAttribute('data-orientation') == 'x' ? 'y' : 'x';

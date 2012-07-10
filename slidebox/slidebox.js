@@ -6,6 +6,8 @@
 			var selected = xtag.query(el, 'x-slides > x-slide[selected="true"]')[0] || 0;
 			return [selected ? xtag.query(el, 'x-slides > x-slide').indexOf(selected) : selected, el.firstElementChild.children.length - 1];
 		},
+		isTimer = false,
+		intId = 0,
 		slide = function(el, index){
 			var slides = xtag.toArray(el.firstElementChild.children);
 			slides.forEach(function(slide){ slide.removeAttribute('selected'); });
@@ -36,7 +38,7 @@
 				if (selected) slide(this, children.indexOf(selected) || 0);
 			}
 		};
-
+	
 	xtag.register('x-slidebox', {
 		onInsert: init,		
 		events:{
@@ -63,6 +65,17 @@
 				var shift = getState(this);
 					shift[0]--;
 				slide(this, shift[0] < 0 ? shift[1] : shift[0]);
+			},
+			autoSlide: function(interval){
+				if (!isTimer) {
+					var that = this;
+					intId = setInterval(function(){ 
+						that.xtag.slideNext.call(that);
+					},interval);
+				}else{
+					clearInterval(intId);
+				}
+				isTimer = !isTimer;
 			}
 		}
 	});
