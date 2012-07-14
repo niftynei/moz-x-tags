@@ -34,11 +34,14 @@
 			
 			if (toSelected) {
 				var selected = slides.querySelector('[selected="true"]');
-				if (selected) slide(this, children.indexOf(selected) || 0);
+				if (selected) {
+					slides.style[xtag.prefix.js+'TransitionDuration'] = '0.00000000000001s';
+					slide(this, children.indexOf(selected) || 0);
+				}
 			};
 		},
 		play = function(loop) {
-			var interval = this.getAttribute('data-interval') || 2000;
+			if (currentTimeout != 0) stop();
 			this.next = function() {
 				var slide = getState(this);
 				interval = this.getAttribute('data-interval') || 2000;
@@ -48,7 +51,7 @@
 				this.xtag.slideNext.call(this);
 				currentTimeout = setTimeout(this.next.bind(this),interval);
 			};
-			currentTimeout = setTimeout(this.next.bind(this), interval);
+			currentTimeout = setTimeout(this.next.bind(this), this.getAttribute('data-interval') || 2000);
 		},
 		stop = function() {
 			clearTimeout(currentTimeout);
@@ -60,66 +63,32 @@
 			slides[start - 1].setAttribute('selected', true);
 		};
 
-// 		slide = function(el, index){
-// 			var slides = xtag.toArray(el.firstElementChild.children);
-// 			slides.forEach(function(slide){ slide.removeAttribute('selected'); });
-// 			slides[index || 0].setAttribute('selected', true);
-// 			el.firstElementChild.style[transform] = 'translate'+ (el.getAttribute('data-orientation') || 'x') + '(' + (index || 0) * (-100 / slides.length) + '%)';
-// 		},
-
-
-	xtag.register('x-slidebox', {
-		onInsert: init,		
-		events:{
-			'transitionend': function(e){
-				if (e.target == this) xtag.fireEvent(this, 'slideend');
-			}
-		},
-		setters: {
-			'data-orientation': function(value){
-				this.setAttribute('data-orientation', value.toLowerCase());
-				init.call(this, true);
-			},
-		},
-		methods: {
-			slideTo: function(index){
-				slide(this, index);
-			},
-			slideNext: function(){
-				var shift = getState(this);
-					shift[0]++;
-				slide(this, shift[0] > shift[1] ? 0 : shift[0]);
-			},
-			slidePrevious: function(){
-				var shift = getState(this);
-					shift[0]--;
-				slide(this, shift[0] < 0 ? shift[1] : shift[0]);
-			}
-		}
-	});
-	
 	xtag.register('x-slideshow', {
  		onInsert: function() {
- 				var autoplay = this.getAttribute('autoplay'), start = this.getAttribute('data-start');
- 				init.call(this);
- 				if (autoplay!=undefined) {
- 					play.call(this, this.getAttribute('loop')!=undefined);
- 					console.log('test 2', start);
- 					if (start!=undefined) {
- 						startOnSlide(this, start);
- 						console.log('test 1');
- 					};
- 				};
- 				
-// 			init.call(this);
-// 			if (this.getAttribute('autoplay')!=undefined){
-// 				play.call(this, this.getAttribute('loop')!=undefined);
-// 			}
+			var autoplay = this.getAttribute('autoplay'), start = this.getAttribute('data-start');
+			init.call(this);
+			if (start!=undefined) {
+				startOnSlide(this, start);
+			}
+			if (autoplay!=undefined) {
+				play.call(this, this.getAttribute('loop')!=undefined);
+			}
  		},
 		events:{
 			'transitionend': function(e){
 				if (e.target == this) xtag.fireEvent(this, 'slideend');
 			}
+		},
+		getters: {
+			'data-interval': function(){
+				return this.getAttribute('data-interval');
+			},
+			'data-start' : function(){
+				return this.getAttribute('data-start');
+			},
+			'loop' : function() {
+				return this.getAttribute('loop')!=undefined;
+			},
 		},
 		setters: {
 			'data-orientation': function(value){
@@ -128,9 +97,13 @@
 			},
 			'data-interval': function(value){
 				this.setAttribute('data-interval', value);
-				stop();
-				play.call(this, this.getAttribute('loop')!=undefined);	
 			},
+			'data-start': function(value){
+				var slideSet = getState(this);
+				if (value > slideSet[1]+1) value = slideSet[1]+1;
+				if (value < 1) value = 1;
+				this.setAttribute('data-start', value);
+			}
 		},
 		methods: {
 			slideNext: function(){
@@ -139,17 +112,11 @@
 				slide(this, shift[0] > shift[1] ? 0 : shift[0]);
 			},
 			play: function(){
-				
+				play.call(this, this.getAttribute('loop')!=undefined);	
 			},
-// 			slideTo: function(index){
-// 				slide(this, index);
-// 			}
-
-// 			slidePrevious: function(){
-// 				var shift = getState(this);
-// 					shift[0]--;
-// 				slide(this, shift[0] < 0 ? shift[1] : shift[0]);
-// 			}
+			stop: function(){
+				stop.call(this);
+			},
 		}
 	});
 
