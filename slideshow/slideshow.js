@@ -53,7 +53,19 @@
 		stop = function() {
 			clearTimeout(currentTimeout);
 			currentTimeout = 0;
+		},
+		startOnSlide = function(el, start) {
+			var slides = xtag.toArray(el.firstElementChild.children);
+			slides.forEach(function(slide){ slide.removeAttribute('selected'); });
+			slides[start - 1].setAttribute('selected', true);
 		};
+
+// 		slide = function(el, index){
+// 			var slides = xtag.toArray(el.firstElementChild.children);
+// 			slides.forEach(function(slide){ slide.removeAttribute('selected'); });
+// 			slides[index || 0].setAttribute('selected', true);
+// 			el.firstElementChild.style[transform] = 'translate'+ (el.getAttribute('data-orientation') || 'x') + '(' + (index || 0) * (-100 / slides.length) + '%)';
+// 		},
 
 
 	xtag.register('x-slidebox', {
@@ -87,14 +99,23 @@
 	});
 	
 	xtag.register('x-slideshow', {
-//		onInsert: init,
  		onInsert: function() {
+ 				var autoplay = this.getAttribute('autoplay'), start = this.getAttribute('data-start');
  				init.call(this);
- 				if (this.getAttribute('autoplay')!=undefined){
-					play.call(this, this.getAttribute('loop')!=undefined);
- 				}
+ 				if (autoplay!=undefined) {
+ 					play.call(this, this.getAttribute('loop')!=undefined);
+ 					console.log('test 2', start);
+ 					if (start!=undefined) {
+ 						startOnSlide(this, start);
+ 						console.log('test 1');
+ 					};
+ 				};
+ 				
+// 			init.call(this);
+// 			if (this.getAttribute('autoplay')!=undefined){
+// 				play.call(this, this.getAttribute('loop')!=undefined);
+// 			}
  		},
-// 		onInsert: init,
 		events:{
 			'transitionend': function(e){
 				if (e.target == this) xtag.fireEvent(this, 'slideend');
@@ -135,7 +156,7 @@
 	xtag.register('x-slide', {
 		onInsert: function(){
 			var ancestor = this.parentNode.parentNode;
-			if (ancestor.tagName.toLowerCase() == 'x-slidebox') init.call(ancestor, true);
+			if (ancestor.tagName.toLowerCase() == 'x-slideshow') init.call(ancestor, true);
 		}
 	});
 	
