@@ -13,8 +13,8 @@
 		<script type="text/javascript" src="slideshow.js"></script>		
 		<style type="text/css">
 			#slideshow_demo {
-				height: 300px;
-				width: 220px;
+				height: 200px;
+				width: 200px;
 			}
 			#slideshow_demo img{
 				height: 100%;
@@ -39,8 +39,13 @@
 				<button data-action-type="playShow">Play</button>
 				<button data-action-type="stopShow">Stop</button>
 				<button data-action-type="slideOrientation">Toggle orientation</button>
+				<br/>
+				<button data-action-type="slideTo">Slide To</button>
+				<input id="slide" type="text"></input>
+				<br/>
 				<button data-action-type="slideSpeed">Change Speed</button>
-				<input id="interval" type="text"></input>
+				<input id="interval" type="text"></input><span>ms</span>
+				<br/>
 				<button data-action-type="getInterval">Show Interval</button>
 				<button data-action-type="getLoopStatus">Show Loop Status</button>
 				<button data-action-type="getStartSlide">Show Start Slide</button>
@@ -52,10 +57,10 @@
 			
 		<x-slideshow id="slideshow_demo" data-interval="1000" autoplay="autoplay" loop data-start=4>
 				<x-slides>
-					<x-slide><img src="../../demo/images/birnimal-calendar.png" /></x-slide>
-					<x-slide><img src="../../demo/images/birnimal-graph.png" /></x-slide>
-					<x-slide><img src="../../demo/images/birnimal-detail.png" /></x-slide>
-					<x-slide><img src="../../demo/images/birnimal-settings.png" /></x-slide>
+					<x-slide><img src="../images/butterfly.jpeg" /></x-slide>
+					<x-slide><img src="../images/flower1.jpeg" /></x-slide>
+					<x-slide><img src="../images/flower2.jpeg" /></x-slide>
+					<x-slide><img src="../images/passionflower.jpeg" /></x-slide>
 				</x-slides>				
 			</x-slideshow>
 			
@@ -90,24 +95,32 @@
 					demo.xtag.stop();
 					break;
 
+				case 'slideTo':
+					var slideIndex = document.getElementById('slide').value;
+					demo.xtag.slideTo(slideIndex);
+					break;
+
 				case 'slideOrientation':
 					demo['data-orientation'] = demo.getAttribute('data-orientation') == 'x' ? 'y' : 'x';
 					break;
+
 				case 'slideSpeed':
 					demo['data-interval']= document.getElementById('interval').value;
 					break;
+
 				case 'getInterval':
 					document.getElementById('message').children[0].innerHTML = 'Slide Interval set at ' +  demo['data-interval'];
 					break;
+
 				case 'getLoopStatus':
 					var msg = demo['loop'] ? 'looping' : 'not looping';
 					document.getElementById('message').children[0].innerHTML = 'Slides are currently ' +  msg;
 					break;
+
 				case 'getStartSlide':
 					document.getElementById('message').children[0].innerHTML = 'Start Slide set at ' + demo['data-start'];
 					break;
 			}
-			
 		}
 	});
 </script>
